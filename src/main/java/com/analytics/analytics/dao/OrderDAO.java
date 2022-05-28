@@ -42,7 +42,6 @@ public class OrderDAO implements IOrderDAO {
 	 */
 	@Override
 	public Order createOrder(Order order) {
-		System.out.println("------"+ order.toString());
 		entityManager.persist(order);
 		Order b = getLastInsertedOrder();
 		return b;
@@ -60,6 +59,7 @@ public class OrderDAO implements IOrderDAO {
 
 		orderFromDB.setStatus(order.getStatus());
 		orderFromDB.setTrackingId(order.getTrackingId());
+		orderFromDB.setProductId(order.getProductId());
 		
 		entityManager.flush();
 		

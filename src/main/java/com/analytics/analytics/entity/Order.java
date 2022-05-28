@@ -27,6 +27,8 @@ public class Order {
     @Column
     private String trackingId;
 
+    @Column
+    private Integer productId;
     public Long getId() {
         return id;
     }
@@ -51,11 +53,20 @@ public class Order {
         this.trackingId = trackingId;
     }
 
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
-                "id=" + id +
+                "id=" + id +  '\'' +
                 ", status='" + status + '\'' +
+                "productId" + productId + '\'' +
                 ", trackingId='" + trackingId + '\'' +
                 '}';
     }
