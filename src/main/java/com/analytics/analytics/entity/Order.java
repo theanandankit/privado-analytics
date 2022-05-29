@@ -27,6 +27,8 @@ public class Order {
     @Column
     private String trackingId;
 
+    private Buyer buyer;
+
     @Column
     private Integer productId;
     public Long getId() {
@@ -61,13 +63,22 @@ public class Order {
         this.productId = productId;
     }
 
+    public Buyer getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(Buyer buyer) {
+        this.buyer = buyer;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
-                "id=" + id +  '\'' +
+                "id=" + id +
                 ", status='" + status + '\'' +
-                "productId" + productId + '\'' +
                 ", trackingId='" + trackingId + '\'' +
+                ", buyer=" + buyer +
+                ", productId=" + productId +
                 '}';
     }
 }
