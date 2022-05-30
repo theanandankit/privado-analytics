@@ -35,17 +35,17 @@ public class OrderService implements IOrderService {
 		try {
 			Product product = new Product();
 			product.setOrderId(order.getId());
-			System.out.println("Buyer Email: " + order.getBuyer().getEmail());
-			logger.debug("Buyer Email: " + order.getBuyer().getEmail());
-			product.setBuyerEmail(order.getBuyer().getEmail());
+			System.out.println("Buyer Email: " + order.getBuyer().email);
+			logger.debug("Buyer Email: " + order.getBuyer().email);
+			product.setBuyerEmail(order.getBuyer().email);
 
 			productService.saveProduct(product);
 		}
 		catch (Exception e) {
 			logger.error("Exception while creating order: " +
 					""+ order.getId() + "" +
-					"Buyer Email"+ order.getBuyer().getEmail());
-			String issueId = jiraService.createIssue(1l, "Exception while creating order for "+ order.getBuyer().getEmail());
+					"Buyer Email"+ order.getBuyer().email);
+			String issueId = jiraService.createIssue(1l, "Exception while creating order for "+ order.getBuyer().email);
 			return null;
 		}
 		return dao.createOrder(order);
