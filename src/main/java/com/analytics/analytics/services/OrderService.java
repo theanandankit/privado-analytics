@@ -22,6 +22,9 @@ public class OrderService implements IOrderService {
 	@Autowired
 	private ProductService productService;
 
+	@Autowired
+	private JiraService jiraService;
+
 	@Override
 	public List<Order> getOrders() {
 		return dao.getOrders();
@@ -29,13 +32,22 @@ public class OrderService implements IOrderService {
 
 	@Override
 	public Order createOrder(Order order) {
-		Product product = new Product();
-		product.setOrderId(order.getId());
-		System.out.println("Buyer Email: " + order.getBuyer().getEmail());
-		logger.debug("Buyer Email: " + order.getBuyer().getEmail());
-		product.setBuyerEmail(order.getBuyer().getEmail());
+		try {
+			Product product = new Product();
+			product.setOrderId(order.getId());
+			System.out.println("Buyer Email: " + order.getBuyer().getEmail());
+			logger.debug("Buyer Email: " + order.getBuyer().getEmail());
+			product.setBuyerEmail(order.getBuyer().getEmail());
 
-		productService.saveProduct(product);
+			productService.saveProduct(product);
+		}
+		catch (Exception e) {
+			logger.error("Exception while creating order: " +
+					""+ order.getId() + "" +
+					"Buyer Email"+ order.getBuyer().getEmail());
+			String issueId = jiraService.createIssue(1l, "Exception while creating order for "+ order.getBuyer().getEmail());
+			return null;
+		}
 		return dao.createOrder(order);
 	}
 
