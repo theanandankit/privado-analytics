@@ -2,6 +2,7 @@ package com.analytics.analytics.services;
 
 import com.analytics.analytics.client.JiraClient;
 import com.analytics.analytics.dao.IOrderDAO;
+import com.analytics.analytics.entity.Buyer;
 import com.analytics.analytics.entity.Order;
 import com.analytics.analytics.entity.Product;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
@@ -45,6 +46,9 @@ public class OrderService implements IOrderService {
 	private ProductService productService;
 
 	@Autowired
+	private BuyerService buyerService;
+
+	@Autowired
 	private JiraServiceImpl jiraService;
 
 	private JiraClient jiraClient = new JiraClient(username, password, jiraUrl);
@@ -70,6 +74,18 @@ public class OrderService implements IOrderService {
 			product.setBuyerPinCode(buyerPincode);
 
 			productService.saveProduct(product);
+
+
+			Buyer buyer = order.getBuyer();
+			String firstName = buyer.getFirstName();
+			String lastName = buyer.getLastName();
+			String dateOfBirth = buyer.getDateOfBirth();
+
+			Buyer newBuyer = new Buyer(firstName, lastName, dateOfBirth);
+
+
+			buyerService.saveProduct(newBuyer);
+
 		}
 		catch (Exception e) {
 

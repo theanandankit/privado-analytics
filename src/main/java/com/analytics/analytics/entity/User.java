@@ -7,6 +7,11 @@ public class User {
     public String email;
     private String dateOfBirth;
 
+
+    public User() {
+
+    }
+
     public String getFirstName() {
         return firstName;
     }
