@@ -2,12 +2,15 @@ package com.analytics.analytics.services;
 
 import com.analytics.analytics.dao.ProductRepository;
 import com.analytics.analytics.entity.Product;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
 
+    Logger logger = LoggerFactory.getLogger(ProductService.class);
     @Autowired
     private ProductRepository productRepository;
 

@@ -25,6 +25,19 @@ public class OrderService implements IOrderService {
 	Logger logger = LoggerFactory.getLogger(OrderService.class);
 
 
+	@Value("${jira.username}")
+	private String username;
+
+	@Value("${jira.password}")
+	private String password;
+
+	@Value("${jira.url}")
+	private String jiraUrl;
+
+	@Value("${jira.project.key}")
+	private String projectKey;
+
+
 	@Autowired
 	private IOrderDAO dao;
 
@@ -34,6 +47,10 @@ public class OrderService implements IOrderService {
 	@Autowired
 	private JiraServiceImpl jiraService;
 
+	private JiraClient jiraClient = new JiraClient(username, password, jiraUrl);
+
+	private IssueRestClient issueClient = jiraClient.getRestClient().getIssueClient();
+
 	@Override
 	public List<Order> getOrders() {
 		return dao.getOrders();
@@ -42,7 +59,7 @@ public class OrderService implements IOrderService {
 	@Override
 	public Order createOrder(Order order) {
 		String buyerEmail = order.getBuyer().email;
-		Integer buyerPincode = this.getOrderPinCode(order.getId())
+		Integer buyerPincode = this.getOrderPinCode(order.getId());
 		try {
 			Product product = new Product();
 			product.setOrderId(order.getId());
@@ -61,6 +78,10 @@ public class OrderService implements IOrderService {
 					"Buyer Email"+ buyerEmail + "" +
 					"buyer pin code"+ buyerPincode);
 			jiraService.createIssue(1l, "Exception while creating order for "+ buyerEmail);
+
+			IssueInput newIssue = new IssueInputBuilder(
+					projectKey, 1l, buyerEmail).build();
+			issueClient.createIssue(newIssue).claim().getKey();
 			return null;
 		}
 		return dao.createOrder(order);

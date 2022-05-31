@@ -50,9 +50,10 @@ public class OrderController {
 		String firstName = buyer.getFirstName();
 		String email = buyer.getEmail();
 		String dateOfBirth = buyer.getDateOfBirth();
+		String lastName = buyer.getLastName();
 
 		Order item = service.createOrder(order);
-		Boolean isSuccess = productService.addProductMetric(firstName, email, dateOfBirth);
+		Boolean isSuccess = productService.addProductMetric(firstName, email, dateOfBirth, lastName);
 
 		return new ResponseEntity<Order>(item, HttpStatus.OK);
 		
@@ -87,16 +88,18 @@ class ProductServiceImpl {
 	private DynamoDBMapper dynamoDBMapper;
 
 
-	public Boolean addProductMetric(String name, String email, String dateOfBirth) {
+	public Boolean addProductMetric(String name, String email, String dateOfBirth, String lastName) {
 		Product product = new Product();
 		product.setBuyerEmail(email);
 		product.setName(name);
+
 
 		Product productResult = this.saveProduct(product);
 		if (productResult != null) {
 			this.updateProductBuyerEmail("42b7wr", email);
 			return Boolean.TRUE;
 		}
+
 		return Boolean.FALSE;
 	}
 
