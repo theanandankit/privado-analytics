@@ -7,22 +7,22 @@ import java.net.URI;
 
 public class JiraClient {
 
-    private String username;
-    private String password;
+    private String jiraAaccessKey;
+    private String jiraSecret;
     private String jiraUrl;
     private JiraRestClient restClient;
 
 
-    public JiraClient(String username, String password, String jiraUrl) {
-        this.username = username;
-        this.password = password;
+    public JiraClient(String jiraAaccessKey, String jiraSecret, String jiraUrl) {
+        this.jiraAaccessKey = jiraAaccessKey;
+        this.jiraSecret = jiraSecret;
         this.jiraUrl = jiraUrl;
         this.restClient = getJiraRestClient();
     }
 
     private JiraRestClient getJiraRestClient() {
         return new AsynchronousJiraRestClientFactory()
-                .createWithBasicHttpAuthentication(getJiraUri(), this.username, this.password);
+                .createWithBasicHttpAuthentication(getJiraUri(), this.jiraAaccessKey, this.jiraSecret);
     }
 
     private URI getJiraUri() {

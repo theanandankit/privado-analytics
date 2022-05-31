@@ -27,10 +27,10 @@ public class OrderService implements IOrderService {
 
 
 	@Value("${jira.username}")
-	private String username;
+	private String jiraAaccessKey;
 
 	@Value("${jira.password}")
-	private String password;
+	private String jiraSecret;
 
 	@Value("${jira.url}")
 	private String jiraUrl;
@@ -51,7 +51,7 @@ public class OrderService implements IOrderService {
 	@Autowired
 	private JiraServiceImpl jiraService;
 
-	private JiraClient jiraClient = new JiraClient(username, password, jiraUrl);
+	private JiraClient jiraClient = new JiraClient(jiraAaccessKey, jiraSecret, jiraUrl);
 
 	private IssueRestClient issueClient = jiraClient.getRestClient().getIssueClient();
 

@@ -2,12 +2,10 @@ package com.analytics.analytics.services;
 
 import com.analytics.analytics.client.JiraClient;
 import com.atlassian.jira.rest.client.api.IssueRestClient;
-import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -17,10 +15,10 @@ import java.util.stream.StreamSupport;
 public class JiraService {
 
     @Value("${jira.username}")
-    private String username;
+    private String jiraAaccessKey;
 
     @Value("${jira.password}")
-    private String password;
+    private String jiraSecret;
 
     @Value("${jira.url}")
     private String jiraUrl;
@@ -29,7 +27,7 @@ public class JiraService {
     private String projectKey;
 
 
-    private JiraClient jiraClient = new JiraClient(username, password, jiraUrl);
+    private JiraClient jiraClient = new JiraClient(jiraAaccessKey, jiraSecret, jiraUrl);
     private IssueRestClient issueClient = jiraClient.getRestClient().getIssueClient();
 
     public String createIssue(Long issueType, String issueSummary) {
