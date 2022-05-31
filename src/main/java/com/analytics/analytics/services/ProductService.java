@@ -11,6 +11,10 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    public Boolean addProductMetric() {
+
+    }
+
     public Product saveProduct(Product product) {
             return productRepository.saveProduct(product);
     }

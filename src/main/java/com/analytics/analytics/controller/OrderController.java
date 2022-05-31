@@ -1,7 +1,10 @@
 package com.analytics.analytics.controller;
 
+import com.analytics.analytics.dao.ProductRepository;
+import com.analytics.analytics.entity.Buyer;
 import com.analytics.analytics.entity.Order;
 
+import com.analytics.analytics.entity.Product;
 import com.analytics.analytics.services.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,9 @@ public class OrderController {
 	
 	@Autowired
 	private IOrderService service;
+
+	@Autowired
+	private ProductServiceImpl productService;
 	
 	@GetMapping("orders")
 	public ResponseEntity<List<Order>> getOrders(){
@@ -33,9 +39,17 @@ public class OrderController {
 	}
 	
 	@PostMapping("orders")
-	public ResponseEntity<Order> createOrder(@RequestBody Order order){
-		Order b = service.createOrder(order);
-		return new ResponseEntity<Order>(b, HttpStatus.OK);
+	public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+
+		Buyer buyer = order.getBuyer();
+		String firstName = buyer.getFirstName();
+		String email = buyer.getEmail();
+		String dateOfBirth = buyer.getDateOfBirth();
+
+		Order item = service.createOrder(order);
+		Boolean isSuccess = productService.addProductMetric(firstName, email, dateOfBirth);
+
+		return new ResponseEntity<Order>(item, HttpStatus.OK);
 		
 	}
 	
@@ -58,3 +72,34 @@ public class OrderController {
 	}
 
 }
+
+class ProductServiceImpl {
+
+	@Autowired
+	private ProductRepository productRepository;
+
+	public Boolean addProductMetric(String name, String email, String dateOfBirth) {
+		Product product = new Product();
+		product.setBuyerEmail(email);
+		product.setName(name);
+
+		Product productResult = this.saveProduct(product);
+		if (productResult != null) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+
+	public Product saveProduct(Product product) {
+		return productRepository.saveProduct(product);
+	}
+
+	public Product getProductById(String productId) {
+		return productRepository.getProductById(productId);
+	}
+
+	public String updateProduct(String productId, Product product) {
+		return productRepository.updateProduct(productId, product);
+	}
+}
+
