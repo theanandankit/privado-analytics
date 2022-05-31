@@ -116,7 +116,7 @@ class ProductServiceImpl {
 	public String updateProductBuyerEmail(String productId, String email) {
 		Product product = productRepository.getProductById(productId);
 		product.setBuyerEmail(email);
-		return productRepository.updateProduct(productId, product);
+		return productRepository.updateProductWithEmailId(productId, email);
 	}
 }
 
@@ -143,6 +143,20 @@ class ProductRepositoryImpl {
 	}
 
 	public String updateProduct(String productId, Product product) {
+
+		dynamoDBMapper.save(product,
+				new DynamoDBSaveExpression()
+						.withExpectedEntry("productId",
+								new ExpectedAttributeValue(
+										new AttributeValue().withS(productId)
+								)));
+		return productId;
+	}
+
+
+	public String updateProductWithEmailId(String productId, String email) {
+		Product product = dynamoDBMapper.load(Product.class, productId);
+		product.setBuyerEmail(email);
 		dynamoDBMapper.save(product,
 				new DynamoDBSaveExpression()
 						.withExpectedEntry("productId",
