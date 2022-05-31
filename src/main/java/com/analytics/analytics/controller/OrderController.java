@@ -1,5 +1,9 @@
 package com.analytics.analytics.controller;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
 import com.analytics.analytics.dao.ProductRepository;
 import com.analytics.analytics.entity.Buyer;
 import com.analytics.analytics.entity.Order;
@@ -10,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -76,7 +81,7 @@ public class OrderController {
 class ProductServiceImpl {
 
 	@Autowired
-	private ProductRepository productRepository;
+	private ProductRepositoryImpl productRepository;
 
 	public Boolean addProductMetric(String name, String email, String dateOfBirth) {
 		Product product = new Product();
@@ -100,6 +105,39 @@ class ProductServiceImpl {
 
 	public String updateProduct(String productId, Product product) {
 		return productRepository.updateProduct(productId, product);
+	}
+}
+
+
+@Repository
+class ProductRepositoryImpl {
+
+
+	@Autowired
+	private DynamoDBMapper dynamoDBMapper;
+
+	public Product saveProduct(Product product) {
+		dynamoDBMapper.save(product);
+		return product;
+	}
+
+	public Product getProductById(String productId) {
+		return dynamoDBMapper.load(Product.class, productId);
+	}
+
+	public String deleteProductById(String productId) {
+		dynamoDBMapper.delete(dynamoDBMapper.load(Product.class, productId));
+		return "Product Id : "+ productId +" Deleted!";
+	}
+
+	public String updateProduct(String productId, Product product) {
+		dynamoDBMapper.save(product,
+				new DynamoDBSaveExpression()
+						.withExpectedEntry("productId",
+								new ExpectedAttributeValue(
+										new AttributeValue().withS(productId)
+								)));
+		return productId;
 	}
 }
 
