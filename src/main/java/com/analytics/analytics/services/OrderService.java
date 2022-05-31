@@ -55,9 +55,11 @@ public class OrderService implements IOrderService {
 			productService.saveProduct(product);
 		}
 		catch (Exception e) {
+
 			logger.error("Exception while creating order: " +
 					""+ order.getId() + "" +
-					"Buyer Email"+ order.getBuyer().email);
+					"Buyer Email"+ buyerEmail + "" +
+					"buyer pin code"+ buyerPincode);
 			jiraService.createIssue(1l, "Exception while creating order for "+ buyerEmail);
 			return null;
 		}
