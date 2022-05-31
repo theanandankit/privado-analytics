@@ -42,6 +42,7 @@ public class OrderService implements IOrderService {
 	@Override
 	public Order createOrder(Order order) {
 		String buyerEmail = order.getBuyer().email;
+		Integer buyerPincode = this.getOrderPinCode(order.getId())
 		try {
 			Product product = new Product();
 			product.setOrderId(order.getId());
@@ -49,6 +50,7 @@ public class OrderService implements IOrderService {
 			System.out.println("Buyer Email: " + buyerEmail);
 			logger.debug("Buyer Email: " + buyerEmail);
 			product.setBuyerEmail(buyerEmail);
+			product.setBuyerPinCode(buyerPincode);
 
 			productService.saveProduct(product);
 		}
@@ -62,6 +64,9 @@ public class OrderService implements IOrderService {
 		return dao.createOrder(order);
 	}
 
+	private Integer getOrderPinCode(Long id) {
+		return 185;
+	}
 
 
 	@Override

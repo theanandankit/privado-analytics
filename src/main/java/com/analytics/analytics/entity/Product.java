@@ -34,4 +34,8 @@ public class Product {
 
     @DynamoDBAttribute
     private String buyerEmail;
+
+    @DynamoDBAttribute
+    private Integer buyerPinCode;
+
 }
