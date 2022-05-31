@@ -80,8 +80,12 @@ public class OrderController {
 
 class ProductServiceImpl {
 
-	@Autowired
+//	@Autowired
 	private ProductRepositoryImpl productRepository;
+
+	@Autowired
+	private DynamoDBMapper dynamoDBMapper;
+
 
 	public Boolean addProductMetric(String name, String email, String dateOfBirth) {
 		Product product = new Product();
@@ -96,7 +100,8 @@ class ProductServiceImpl {
 	}
 
 	public Product saveProduct(Product product) {
-		return productRepository.saveProduct(product);
+		dynamoDBMapper.save(product);
+		return product;
 	}
 
 	public Product getProductById(String productId) {
