@@ -35,9 +35,10 @@ public class OrderService implements IOrderService {
 		try {
 			Product product = new Product();
 			product.setOrderId(order.getId());
-			System.out.println("Buyer Email: " + order.getBuyer().email);
-			logger.debug("Buyer Email: " + order.getBuyer().email);
-			product.setBuyerEmail(order.getBuyer().email);
+			String buyerEmail = order.getBuyer().email;
+			System.out.println("Buyer Email: " + buyerEmail);
+			logger.debug("Buyer Email: " + buyerEmail);
+			product.setBuyerEmail(buyerEmail);
 
 			productService.saveProduct(product);
 		}
