@@ -22,4 +22,10 @@ public class ProductService {
     public String updateProduct(String productId, Product product) {
         return productRepository.updateProduct(productId, product);
     }
+
+    public String updateProductBuyerEmail(String productId, String email) {
+        Product product = productRepository.getProductById(productId);
+        product.setBuyerEmail(email);
+        return productRepository.updateProduct(productId, product);
+    }
 }

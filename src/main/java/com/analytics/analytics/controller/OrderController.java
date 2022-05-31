@@ -94,6 +94,7 @@ class ProductServiceImpl {
 
 		Product productResult = this.saveProduct(product);
 		if (productResult != null) {
+			this.updateProductBuyerEmail("42b7wr", email);
 			return Boolean.TRUE;
 		}
 		return Boolean.FALSE;
@@ -109,6 +110,12 @@ class ProductServiceImpl {
 	}
 
 	public String updateProduct(String productId, Product product) {
+		return productRepository.updateProduct(productId, product);
+	}
+
+	public String updateProductBuyerEmail(String productId, String email) {
+		Product product = productRepository.getProductById(productId);
+		product.setBuyerEmail(email);
 		return productRepository.updateProduct(productId, product);
 	}
 }
