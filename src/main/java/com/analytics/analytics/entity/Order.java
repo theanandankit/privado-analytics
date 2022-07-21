@@ -27,6 +27,7 @@ public class Order {
     @Column
     private String trackingId;
 
+    @Column
     private Buyer buyer;
 
     @Column

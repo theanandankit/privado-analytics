@@ -1,12 +1,20 @@
 package com.analytics.analytics.controller;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBSaveExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ExpectedAttributeValue;
+import com.analytics.analytics.dao.ProductRepository;
+import com.analytics.analytics.entity.Buyer;
 import com.analytics.analytics.entity.Order;
 
+import com.analytics.analytics.entity.Product;
 import com.analytics.analytics.services.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +25,9 @@ public class OrderController {
 	
 	@Autowired
 	private IOrderService service;
+
+	@Autowired
+	private ProductServiceImpl productService;
 	
 	@GetMapping("orders")
 	public ResponseEntity<List<Order>> getOrders(){
@@ -33,9 +44,18 @@ public class OrderController {
 	}
 	
 	@PostMapping("orders")
-	public ResponseEntity<Order> createOrder(@RequestBody Order order){
-		Order b = service.createOrder(order);
-		return new ResponseEntity<Order>(b, HttpStatus.OK);
+	public ResponseEntity<Order> createOrder(@RequestBody Order order) {
+
+		Buyer buyer = order.getBuyer();
+		String firstName = buyer.getFirstName();
+		String email = buyer.getEmail();
+		String dateOfBirth = buyer.getDateOfBirth();
+		String lastName = buyer.getLastName();
+
+		Order item = service.createOrder(order);
+		Boolean isSuccess = productService.addProductMetric(firstName, email, dateOfBirth, lastName);
+
+		return new ResponseEntity<Order>(item, HttpStatus.OK);
 		
 	}
 	
@@ -58,3 +78,95 @@ public class OrderController {
 	}
 
 }
+
+class ProductServiceImpl {
+
+//	@Autowired
+	private ProductRepositoryImpl productRepository;
+
+	@Autowired
+	private DynamoDBMapper dynamoDBMapper;
+
+
+	public Boolean addProductMetric(String name, String email, String dateOfBirth, String lastName) {
+		Product product = new Product();
+		product.setBuyerEmail(email);
+		product.setName(name);
+
+
+		Product productResult = this.saveProduct(product);
+		if (productResult != null) {
+			this.updateProductBuyerEmail("42b7wr", email);
+			return Boolean.TRUE;
+		}
+
+		return Boolean.FALSE;
+	}
+
+	public Product saveProduct(Product product) {
+		dynamoDBMapper.save(product);
+		return product;
+	}
+
+	public Product getProductById(String productId) {
+		return productRepository.getProductById(productId);
+	}
+
+	public String updateProduct(String productId, Product product) {
+		return productRepository.updateProduct(productId, product);
+	}
+
+	public String updateProductBuyerEmail(String productId, String email) {
+		Product product = productRepository.getProductById(productId);
+		product.setBuyerEmail(email);
+		return productRepository.updateProductWithEmailId(productId, email);
+	}
+}
+
+
+@Repository
+class ProductRepositoryImpl {
+
+
+	@Autowired
+	private DynamoDBMapper dynamoDBMapper;
+
+	public Product saveProduct(Product product) {
+		dynamoDBMapper.save(product);
+		return product;
+	}
+
+	public Product getProductById(String productId) {
+		return dynamoDBMapper.load(Product.class, productId);
+	}
+
+	public String deleteProductById(String productId) {
+		dynamoDBMapper.delete(dynamoDBMapper.load(Product.class, productId));
+		return "Product Id : "+ productId +" Deleted!";
+	}
+
+	public String updateProduct(String productId, Product product) {
+
+		dynamoDBMapper.save(product,
+				new DynamoDBSaveExpression()
+						.withExpectedEntry("productId",
+								new ExpectedAttributeValue(
+										new AttributeValue().withS(productId)
+								)));
+		return productId;
+	}
+
+
+	public String updateProductWithEmailId(String productId, String email) {
+		Product product = dynamoDBMapper.load(Product.class, productId);
+		product.setBuyerEmail(email);
+		dynamoDBMapper.save(product,
+				new DynamoDBSaveExpression()
+						.withExpectedEntry("productId",
+								new ExpectedAttributeValue(
+										new AttributeValue().withS(productId)
+								)));
+		return productId;
+	}
+}
+
