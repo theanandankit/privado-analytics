@@ -1,0 +1,39 @@
+name: Monitoring Stability
+
+on:
+  push:
+    branches: ['master']
+  pull_request:
+    branches: ['master']
+  
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Privado Env
+        run: curl -o- https://raw.githubusercontent.com/Privado-Inc/privado-cli/main/install.sh | bash
+
+      - name: Install ZSH
+        run: sudo apt-get install zsh
+      
+      - name : Activate Bash
+        run : . bash -c "source ~/.bashrc"
+                
+      - name : Activate ZSH
+        run : zsh - c "source ~/.zshrc"
+
+      - name : Switch to another terminal
+        run : ksh -c ". ~/.profile" 
+
+      - name: Cloning the Repo 
+        uses: actions/checkout@v3
+        with:
+          owner: 'karan-batavia'
+          repository: 'karan-batavia/privado-analytics'
+
+      - name: Scan the Project
+        run: privado scan /privado-analytics && cd /privado-analytics && ls -la
