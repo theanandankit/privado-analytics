@@ -24,7 +24,7 @@ jobs:
         run : bash -c "source ~/.bashrc"
                 
       - name : Activate ZSH
-        run : zsh - c "source ~/.zshrc"
+        run : zsh -c "source ~/.zshrc"
 
       - name : Switch to another terminal
         run : ksh -c ". ~/.profile" 
